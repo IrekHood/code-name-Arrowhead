@@ -25,6 +25,10 @@ window/stretch/aspect="expand"
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
 
+[global_group]
+
+Player="tags all, that has an realtionship to thle player, sohe does not intercact with himselve"
+
 [input]
 
 UP={
@@ -56,6 +60,9 @@ shoot={
 [layer_names]
 
 2d_physics/layer_1="Walls"
+2d_physics/layer_2="Projectiles"
+2d_physics/layer_3="player"
+2d_physics/layer_4="entities"
 
 [rendering]
 

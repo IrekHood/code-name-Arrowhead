@@ -35,12 +35,19 @@ func _calc_input_velocity(delta: float):
 		velocity = velocity.move_toward(Vector2(), DECELERATION * delta)
 	else:
 		velocity = velocity.move_toward(direction * MAX_SPEED, ACCELERATION * delta)
+
+
+func _on_bow_spawn_arrow(arrow_to_spawn: Area2D) -> void:
+	var container = get_tree().current_scene
+	container.add_child(arrow_to_spawn)
+	arrow_to_spawn.global_position = $bow/Bow.global_position
+	arrow_to_spawn.global_rotation = $bow/Bow.global_rotation
 "
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ir5ru"]
 radius = 114.03947
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["Player"]]
 script = SubResource("GDScript_xx6xh")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -57,3 +64,5 @@ position_smoothing_enabled = true
 
 [node name="Bow" parent="bow" instance=ExtResource("2_ir5ru")]
 position = Vector2(173, 2)
+
+[connection signal="spawn_arrow" from="bow/Bow" to="." method="_on_bow_spawn_arrow"]

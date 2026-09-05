@@ -1,11 +1,11 @@
 [gd_scene load_steps=4 format=3 uid="uid://b7qe3fxj65jpo"]
 
-[ext_resource type="Script" uid="uid://qbtkk5avb7ji" path="res://wall_scalable.gd" id="1_y26yi"]
+[ext_resource type="Script" uid="uid://qbtkk5avb7ji" path="res://scalable_walls/wall_scalable.gd" id="1_y26yi"]
 [ext_resource type="Texture2D" uid="uid://cxfvowi1a8mio" path="res://levels/wall.png" id="2_leat5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_leat5"]
 resource_local_to_scene = true
-size = Vector2(648.65, 51.28)
+size = Vector2(150, 51.28)
 
 [node name="wall_scalable" type="Node2D"]
 script = ExtResource("1_y26yi")
@@ -17,12 +17,12 @@ position = Vector2(0, -31.5)
 texture = ExtResource("2_leat5")
 centered = false
 region_enabled = true
-region_rect = Rect2(0, 104, 100, 63.582)
+region_rect = Rect2(0, 104, 150, 63.582)
 
 [node name="walls" type="Node2D" parent="."]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
-position = Vector2(50, 0)
+position = Vector2(75, 0)
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]

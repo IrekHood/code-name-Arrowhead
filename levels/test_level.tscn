@@ -5,6 +5,8 @@
 
 [node name="test_level" type="Node2D"]
 
+[node name="Projectiles" type="Node2D" parent="."]
+
 [node name="Walls" type="Node2D" parent="."]
 
 [node name="wall_scalable3" parent="Walls" instance=ExtResource("1_46lwt")]

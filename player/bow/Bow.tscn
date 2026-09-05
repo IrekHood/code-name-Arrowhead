@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cg1xd55texwiv"]
 
 [ext_resource type="Texture2D" uid="uid://gkhtub3wuhpm" path="res://player/bow/bow.png" id="1_sldlb"]
-[ext_resource type="PackedScene" uid="uid://bbwcjc0xi0ks2" path="res://player/arrow/display_arrow.tscn" id="2_nqhht"]
+[ext_resource type="Texture2D" uid="uid://dnq882cm5pc0v" path="res://player/arrow/arrow.png" id="2_nqhht"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_nqhht"]
 animations = [{
@@ -20,13 +20,16 @@ script/source = "extends AnimatedSprite2D
 var drawing_back = false
 const shake_intensity = 10.0
 
+var arrow: PackedScene = preload(\"res://player/arrow/shooting/ShootingArrow.tscn\")
+signal spawn_arrow(arrow_to_spawn)
+
 func start_draw():
 	$ShootTimer.start()
 	drawing_back = true
 	
 func end_draw():
 	if $ShootTimer.is_stopped() and drawing_back:
-		$DisplayArrow.shoot()
+		spawn_arrow.emit(arrow.instantiate())
 	else:
 		$ShootTimer.stop()
 	
@@ -41,7 +44,7 @@ func _process(_delta: float) -> void:
 		off = Vector2()
 
 	offset = off
-	$DisplayArrow/Arrow.position = off
+	$Arrow.position = off
 "
 
 [node name="Bow" type="AnimatedSprite2D"]
@@ -49,8 +52,11 @@ sprite_frames = SubResource("SpriteFrames_nqhht")
 script = SubResource("GDScript_nqhht")
 
 [node name="ShootTimer" type="Timer" parent="."]
+wait_time = 0.5
 one_shot = true
 
-[node name="DisplayArrow" parent="." instance=ExtResource("2_nqhht")]
-position = Vector2(53, -2)
-rotation = 1.5707964
+[node name="Arrow" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Arrow"]
+position = Vector2(52, -7)
+texture = ExtResource("2_nqhht")
