@@ -1,0 +1,56 @@
+[gd_scene load_steps=5 format=3 uid="uid://cg1xd55texwiv"]
+
+[ext_resource type="Texture2D" uid="uid://gkhtub3wuhpm" path="res://player/bow/bow.png" id="1_sldlb"]
+[ext_resource type="PackedScene" uid="uid://bbwcjc0xi0ks2" path="res://player/arrow/display_arrow.tscn" id="2_nqhht"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_nqhht"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_sldlb")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="GDScript" id="GDScript_nqhht"]
+script/source = "extends AnimatedSprite2D
+
+var drawing_back = false
+const shake_intensity = 10.0
+
+func start_draw():
+	$ShootTimer.start()
+	drawing_back = true
+	
+func end_draw():
+	if $ShootTimer.is_stopped() and drawing_back:
+		$DisplayArrow.shoot()
+	else:
+		$ShootTimer.stop()
+	
+	drawing_back = false
+	
+func _process(_delta: float) -> void:
+	# windup shiver
+	var off
+	if not $ShootTimer.is_stopped():
+		off = Vector2(randf_range(-shake_intensity, shake_intensity), randf_range(-shake_intensity, shake_intensity))
+	else:
+		off = Vector2()
+
+	offset = off
+	$DisplayArrow/Arrow.position = off
+"
+
+[node name="Bow" type="AnimatedSprite2D"]
+sprite_frames = SubResource("SpriteFrames_nqhht")
+script = SubResource("GDScript_nqhht")
+
+[node name="ShootTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="DisplayArrow" parent="." instance=ExtResource("2_nqhht")]
+position = Vector2(53, -2)
+rotation = 1.5707964

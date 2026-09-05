@@ -1,0 +1,59 @@
+[gd_scene load_steps=5 format=3 uid="uid://b32ye0wokcgwn"]
+
+[ext_resource type="Texture2D" uid="uid://cqg7ut06101n6" path="res://player/player/player.png" id="1_xx6xh"]
+[ext_resource type="PackedScene" uid="uid://cg1xd55texwiv" path="res://player/bow/Bow.tscn" id="2_ir5ru"]
+
+[sub_resource type="GDScript" id="GDScript_xx6xh"]
+script/source = "extends CharacterBody2D
+
+
+const ACCELERATION = 6500.0
+const DECELERATION = 4000
+var MAX_SPEED =  1000
+
+
+func _physics_process(delta: float) -> void:
+	_calc_input_velocity(delta)
+	
+	_bow_input_handeling()
+
+	move_and_slide()
+	
+	
+func _bow_input_handeling():
+	$bow.look_at(get_global_mouse_position())
+	
+	if Input.is_action_just_pressed(\"shoot\"):
+		$bow/Bow.start_draw()
+	
+	if Input.is_action_just_released(\"shoot\"):
+		$bow/Bow.end_draw()
+
+func _calc_input_velocity(delta: float):
+	var direction = Input.get_vector(\"LEFT\", \"RIGHT\", \"UP\", \"DOWN\")
+	if direction.is_zero_approx():
+		velocity = velocity.move_toward(Vector2(), DECELERATION * delta)
+	else:
+		velocity = velocity.move_toward(direction * MAX_SPEED, ACCELERATION * delta)
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ir5ru"]
+radius = 114.03947
+
+[node name="Player" type="CharacterBody2D"]
+script = SubResource("GDScript_xx6xh")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_xx6xh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ir5ru")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.285, 0.285)
+position_smoothing_enabled = true
+
+[node name="bow" type="Node2D" parent="."]
+
+[node name="Bow" parent="bow" instance=ExtResource("2_ir5ru")]
+position = Vector2(173, 2)
