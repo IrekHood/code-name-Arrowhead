@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bcnf17ouvynld"]
+
+[ext_resource type="PackedScene" uid="uid://b7qe3fxj65jpo" path="res://scalable_walls/wall_scalable.tscn" id="1_46lwt"]
+
+[node name="test_level" type="Node2D"]
+
+[node name="wall_scalable" parent="." instance=ExtResource("1_46lwt")]
+rotation = 1.0847495
+length = 78.055

@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://b7qe3fxj65jpo"]
+
+[ext_resource type="Script" uid="uid://qbtkk5avb7ji" path="res://wall_scalable.gd" id="1_y26yi"]
+[ext_resource type="Texture2D" uid="uid://cxfvowi1a8mio" path="res://levels/wall.png" id="2_leat5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_leat5"]
+
+[node name="wall_scalable" type="Node2D"]
+script = ExtResource("1_y26yi")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_repeat = 2
+position = Vector2(0, -31.5)
+texture = ExtResource("2_leat5")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 104, 100, 63.582)
+
+[node name="walls" type="Node2D" parent="."]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("RectangleShape2D_leat5")
