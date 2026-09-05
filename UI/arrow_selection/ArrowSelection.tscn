@@ -1,0 +1,226 @@
+[gd_scene load_steps=12 format=3 uid="uid://c5mhmsja15ctp"]
+
+[ext_resource type="Texture2D" uid="uid://brpcfq2vau1q6" path="res://player/arrow/tips/tip_frozen.png" id="1_5rusk"]
+[ext_resource type="Texture2D" uid="uid://cuu3m3088wq3r" path="res://player/arrow/tips/tip_normal.png" id="2_5hg6s"]
+[ext_resource type="Texture2D" uid="uid://bgn6bq1n0hicv" path="res://player/arrow/tips/tip_poison.png" id="3_pr6oa"]
+[ext_resource type="Texture2D" uid="uid://iwh5g0ddlgpx" path="res://player/arrow/bodies/body_homing.png" id="4_yws5p"]
+[ext_resource type="Texture2D" uid="uid://koccngk7c2s0" path="res://player/arrow/bodies/body_normal.png" id="5_fpqjg"]
+[ext_resource type="Texture2D" uid="uid://dycghe33ju4ak" path="res://player/arrow/bodies/body_projectile.png" id="6_olmtf"]
+[ext_resource type="Texture2D" uid="uid://b86evvlpa53p2" path="res://player/arrow/fletching/feather_fast.png" id="7_us85h"]
+[ext_resource type="Texture2D" uid="uid://cmr5rhghvoinx" path="res://player/arrow/fletching/feather_normal.png" id="8_w4ma1"]
+[ext_resource type="Texture2D" uid="uid://fhwpw4cri5v3" path="res://player/arrow/fletching/feathre_area.png" id="9_54h26"]
+
+[sub_resource type="GDScript" id="GDScript_5rusk"]
+script/source = "extends Control
+
+var tip: int = 1:
+	set(value):
+		tip = posmod(value, 3) # modulo
+		_update_display()
+		
+var body: int = 1:
+	set(value):
+		body = posmod(value, 3) # modulo
+		_update_display()
+		
+var fletching: int = 1:
+	set(value):
+		fletching = posmod(value, 3) # modulo
+		_update_display()
+		
+		
+# imagle lists
+
+
+# arrow_selection.gd
+func _ready() -> void:
+	Events.toggle_arrow_ui.connect(_on_toggle)
+	_update_display()
+
+func _on_toggle() -> void:
+	visible = not visible
+
+# button presing logic
+
+func _on_left_tip_pressed() -> void:
+	tip+=1
+func _on_right_tip_pressed() -> void:
+	tip-=1
+	
+
+func _on_left_body_pressed() -> void:
+	body+=1
+func _on_right_body_pressed() -> void:
+	body-=1
+
+
+func _on_left_fletching_pressed() -> void:
+	fletching+=1
+func _on_right_fletching_pressed() -> void:
+	fletching-=1
+	
+
+	
+func _update_display() -> void:
+	var i = 2
+	for text_image: TextureRect in $BoxContainer/VBoxContainer/HBoxContainer3/TipContainer.get_children():
+		text_image.texture = Globals.tip_list[(tip + i)%3]
+		i+=1
+
+	i = 2
+	for text_image: TextureRect in $BoxContainer/VBoxContainer/HBoxContainer/BodyContainer.get_children():
+		text_image.texture = Globals.body_list[(body + i) % 3]
+		i += 1
+
+	i = 2
+	for text_image: TextureRect in $BoxContainer/VBoxContainer/HBoxContainer2/FletchingContainer.get_children():
+		text_image.texture = Globals.fletching_list[(fletching + i) % 3]
+		i += 1
+		
+	Globals.selectec_arrow_combo = [tip, body, fletching]
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qqu7s"]
+content_margin_left = 30.0
+content_margin_top = 30.0
+content_margin_right = 30.0
+content_margin_bottom = 30.0
+bg_color = Color(0.21950099, 0.21950105, 0.21950087, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+
+[node name="ArrowSelection" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_5rusk")
+
+[node name="BoxContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_right = 204.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qqu7s")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 59
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="BoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="left tip" type="Button" parent="BoxContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+text = "<"
+
+[node name="TipContainer" type="HBoxContainer" parent="BoxContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+
+[node name="0" type="TextureRect" parent="BoxContainer/VBoxContainer/HBoxContainer3/TipContainer"]
+custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
+texture = ExtResource("1_5rusk")
+expand_mode = 4
+
+[node name="1" type="TextureRect" parent="BoxContainer/VBoxContainer/HBoxContainer3/TipContainer"]
+custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
+texture = ExtResource("2_5hg6s")
+expand_mode = 4
+
+[node name="3" type="TextureRect" parent="BoxContainer/VBoxContainer/HBoxContainer3/TipContainer"]
+custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
+texture = ExtResource("3_pr6oa")
+expand_mode = 4
+
+[node name="right tip" type="Button" parent="BoxContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+text = ">
+"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="BoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="left body" type="Button" parent="BoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "<"
+
+[node name="BodyContainer" type="HBoxContainer" parent="BoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="0" type="TextureRect" parent="BoxContainer/VBoxContainer/HBoxContainer/BodyContainer"]
+custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
+texture = ExtResource("4_yws5p")
+expand_mode = 5
+
+[node name="1" type="TextureRect" parent="BoxContainer/VBoxContainer/HBoxContainer/BodyContainer"]
+custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
+texture = ExtResource("5_fpqjg")
+expand_mode = 5
+
+[node name="2" type="TextureRect" parent="BoxContainer/VBoxContainer/HBoxContainer/BodyContainer"]
+custom_minimum_size = Vector2(84, 0)
+layout_mode = 2
+texture = ExtResource("6_olmtf")
+expand_mode = 5
+
+[node name="right body" type="Button" parent="BoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = ">
+"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="BoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="left fletching" type="Button" parent="BoxContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "<"
+
+[node name="FletchingContainer" type="HBoxContainer" parent="BoxContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+
+[node name="0" type="TextureRect" parent="BoxContainer/VBoxContainer/HBoxContainer2/FletchingContainer"]
+layout_mode = 2
+texture = ExtResource("7_us85h")
+
+[node name="1" type="TextureRect" parent="BoxContainer/VBoxContainer/HBoxContainer2/FletchingContainer"]
+layout_mode = 2
+texture = ExtResource("8_w4ma1")
+
+[node name="2" type="TextureRect" parent="BoxContainer/VBoxContainer/HBoxContainer2/FletchingContainer"]
+layout_mode = 2
+texture = ExtResource("9_54h26")
+
+[node name="right fletching" type="Button" parent="BoxContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = ">
+"
+
+[connection signal="pressed" from="BoxContainer/VBoxContainer/HBoxContainer3/left tip" to="." method="_on_left_tip_pressed"]
+[connection signal="pressed" from="BoxContainer/VBoxContainer/HBoxContainer3/right tip" to="." method="_on_right_tip_pressed"]
+[connection signal="pressed" from="BoxContainer/VBoxContainer/HBoxContainer/left body" to="." method="_on_left_body_pressed"]
+[connection signal="pressed" from="BoxContainer/VBoxContainer/HBoxContainer/right body" to="." method="_on_right_body_pressed"]
+[connection signal="pressed" from="BoxContainer/VBoxContainer/HBoxContainer2/left fletching" to="." method="_on_left_fletching_pressed"]
+[connection signal="pressed" from="BoxContainer/VBoxContainer/HBoxContainer2/right fletching" to="." method="_on_right_fletching_pressed"]

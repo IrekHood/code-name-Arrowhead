@@ -11,6 +11,9 @@ const ACCELERATION = 6500.0
 const DECELERATION = 4000
 var MAX_SPEED =  1000
 
+func _process(_delta: float) -> void:
+	if Input.is_action_just_pressed(\"toggle arrow UI\"):
+		Events.toggle_arrow_ui.emit()
 
 func _physics_process(delta: float) -> void:
 	_calc_input_velocity(delta)

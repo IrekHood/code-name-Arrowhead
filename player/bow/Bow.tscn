@@ -1,7 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://cg1xd55texwiv"]
+[gd_scene load_steps=7 format=3 uid="uid://cg1xd55texwiv"]
 
 [ext_resource type="Texture2D" uid="uid://gkhtub3wuhpm" path="res://player/bow/bow.png" id="1_sldlb"]
-[ext_resource type="Texture2D" uid="uid://dnq882cm5pc0v" path="res://player/arrow/arrow.png" id="2_nqhht"]
+[ext_resource type="Texture2D" uid="uid://koccngk7c2s0" path="res://player/arrow/bodies/body_normal.png" id="2_k36xp"]
+[ext_resource type="Texture2D" uid="uid://cuu3m3088wq3r" path="res://player/arrow/tips/tip_normal.png" id="3_j8dk8"]
+[ext_resource type="Texture2D" uid="uid://cmr5rhghvoinx" path="res://player/arrow/fletching/feather_normal.png" id="4_ar140"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_nqhht"]
 animations = [{
@@ -22,6 +24,9 @@ const shake_intensity = 10.0
 
 var arrow: PackedScene = preload(\"res://player/arrow/shooting/ShootingArrow.tscn\")
 signal spawn_arrow(arrow_to_spawn)
+
+func _ready() -> void:
+	Events.change_current_arrow_lodout.connect(_on_arrow_change)
 
 func start_draw():
 	$ShootTimer.start()
@@ -45,6 +50,12 @@ func _process(_delta: float) -> void:
 
 	offset = off
 	$Arrow.position = off
+
+
+func _on_arrow_change(value):
+	$Arrow/tip.texture = Globals.tip_list[value[0]]
+	$Arrow/body.texture = Globals.body_list[value[1]]
+	$Arrow/fletching.texture = Globals.fletching_list[value[2]]
 "
 
 [node name="Bow" type="AnimatedSprite2D"]
@@ -56,7 +67,16 @@ wait_time = 0.5
 one_shot = true
 
 [node name="Arrow" type="Node2D" parent="."]
+rotation = 1.5707964
 
-[node name="Sprite2D" type="Sprite2D" parent="Arrow"]
-position = Vector2(52, -7)
-texture = ExtResource("2_nqhht")
+[node name="body" type="Sprite2D" parent="Arrow"]
+position = Vector2(-4, -48.999996)
+texture = ExtResource("2_k36xp")
+
+[node name="tip" type="Sprite2D" parent="Arrow"]
+position = Vector2(-3.0000038, -115)
+texture = ExtResource("3_j8dk8")
+
+[node name="fletching" type="Sprite2D" parent="Arrow"]
+position = Vector2(-4.999996, 38.000004)
+texture = ExtResource("4_ar140")
