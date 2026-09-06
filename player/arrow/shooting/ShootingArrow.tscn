@@ -1,26 +1,96 @@
 [gd_scene load_steps=6 format=3 uid="uid://wp21lao7q7vm"]
 
-[ext_resource type="Texture2D" uid="uid://koccngk7c2s0" path="res://player/arrow/bodies/body_normal.png" id="1_4g0uw"]
+[ext_resource type="Texture2D" uid="uid://dycghe33ju4ak" path="res://player/arrow/bodies/body_projectile.png" id="1_4g0uw"]
 [ext_resource type="Texture2D" uid="uid://cuu3m3088wq3r" path="res://player/arrow/tips/tip_normal.png" id="2_hq7ka"]
-[ext_resource type="Texture2D" uid="uid://cmr5rhghvoinx" path="res://player/arrow/fletching/feather_normal.png" id="3_7uefr"]
+[ext_resource type="Texture2D" uid="uid://fhwpw4cri5v3" path="res://player/arrow/fletching/feathre_area.png" id="3_4g0uw"]
 
 [sub_resource type="GDScript" id="GDScript_1t7mc"]
 resource_name = "shooting_arrow"
 script/source = "class_name ShootingArrow
 extends Area2D
 
-var speed = 1300
+const BASE_SPEED = 1300
+const FAST_SPEED = 3500
+const HOMING_TURN_SPEED = 1.0  # radians/sec
+
 var moving: = true
 
+var arrow_id = [1, 1, 1]
+
+const SCATER_PROJECTILE = preload(\"res://player/arrow/shooting/Scater_projectile.tscn\")
+
+## !!!!!!! add more interactions between combos!!!!!
+
 func _physics_process(delta: float) -> void:
+	
+	var speed = BASE_SPEED
+	
+	if not arrow_id.is_empty():
+		
+		match arrow_id[1]:
+			0: # homing
+				if moving:
+					var target_angle = (get_global_mouse_position() - global_position).angle()
+					if arrow_id[2] == 0: # interaction with fast fletchng
+						rotation = lerp_angle(rotation, target_angle, (HOMING_TURN_SPEED + 2) * delta)
+					else:
+						rotation = lerp_angle(rotation, target_angle, HOMING_TURN_SPEED * delta)
+			1:  # normal
+				pass
+			2:  # scatershot
+				if $ScaterTimer.is_stopped():
+					if arrow_id[2] == 0: # interaction with fast fletchng
+						$ScaterTimer.wait_time = 0.12
+					$ScaterTimer.start()
+		match arrow_id[2]:
+			0:  # fast
+				speed = FAST_SPEED
+			1:  # normal
+				pass
+			2:  # area
+				if $Area2D/CollisionPolygon2D.disabled:
+					$Area2D/CollisionPolygon2D.set_deferred(\"disabled\", false)
+		 
+	
 	if moving:
 		position += transform.x * speed * delta
-	elif not $CollisionShape2D.disabled:
+	elif not $CollisionShape2D.disabled or $Area2D/CollisionPolygon2D.disabled:
 		$CollisionShape2D.set_deferred(\"disabled\", true)
+		$Area2D/CollisionPolygon2D.set_deferred(\"disabled\", true)
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.get_groups().is_empty():
 		moving = false
+	elif not body.is_in_group(\"Player\"):
+		match arrow_id[0]:
+			0: # ice
+				pass
+			1: # normal / enhanced
+				pass
+			2:  # poison
+				pass
+		
+		
+		
+		
+		
+func assing_arrow(value):
+	$Arrow/tip.texture = Globals.tip_list[value[0]]
+	$Arrow/body.texture = Globals.body_list[value[1]]
+	$Arrow/fletching.texture = Globals.fletching_list[value[2]]
+	arrow_id = value.duplicate()
+
+
+func _on_scater_timer_timeout() -> void:
+	var bullet1 = SCATER_PROJECTILE.instantiate()
+	var bullet2 = SCATER_PROJECTILE.instantiate()
+	bullet1.global_transform = $Marker2D.global_transform
+	bullet2.global_transform = $Marker2D2.global_transform
+	
+	get_tree().current_scene.add_child(bullet1)
+	get_tree().current_scene.add_child(bullet2)
+
+	
 "
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_aljin"]
@@ -46,11 +116,33 @@ texture = ExtResource("2_hq7ka")
 
 [node name="fletching" type="Sprite2D" parent="Arrow"]
 position = Vector2(-0.9999962, 87)
-texture = ExtResource("3_7uefr")
+texture = ExtResource("3_4g0uw")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_aljin")
 
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 8
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Area2D"]
+position = Vector2(-58, -3)
+polygon = PackedVector2Array(-6, -40, 0, 0, -5, 39, -33, 56, -47, 79, -47, -72, -33, -51)
+disabled = true
+
+[node name="ScaterTimer" type="Timer" parent="."]
+wait_time = 0.3
+
+[node name="Marker2D2" type="Marker2D" parent="."]
+position = Vector2(5, 3)
+rotation = 2.3418434
+
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(5, -7)
+rotation = -2.1631553
+
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_body_entered"]
+[connection signal="timeout" from="ScaterTimer" to="." method="_on_scater_timer_timeout"]

@@ -40,11 +40,13 @@ func _calc_input_velocity(delta: float):
 		velocity = velocity.move_toward(direction * MAX_SPEED, ACCELERATION * delta)
 
 
-func _on_bow_spawn_arrow(arrow_to_spawn: Area2D) -> void:
+func _on_bow_spawn_arrow(arrow_to_spawn: Area2D, arrow_id) -> void:
 	var container = get_tree().current_scene
 	container.add_child(arrow_to_spawn)
 	arrow_to_spawn.global_position = $bow/Bow.global_position
 	arrow_to_spawn.global_rotation = $bow/Bow.global_rotation
+	
+	arrow_to_spawn.assing_arrow(arrow_id)
 "
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ir5ru"]

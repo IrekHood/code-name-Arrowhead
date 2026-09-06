@@ -21,6 +21,7 @@ script/source = "extends AnimatedSprite2D
 
 var drawing_back = false
 const shake_intensity = 10.0
+var arrow_id = [1, 1, 1]
 
 var arrow: PackedScene = preload(\"res://player/arrow/shooting/ShootingArrow.tscn\")
 signal spawn_arrow(arrow_to_spawn)
@@ -34,7 +35,7 @@ func start_draw():
 	
 func end_draw():
 	if $ShootTimer.is_stopped() and drawing_back:
-		spawn_arrow.emit(arrow.instantiate())
+		spawn_arrow.emit(arrow.instantiate(), arrow_id)
 	else:
 		$ShootTimer.stop()
 	
@@ -56,6 +57,7 @@ func _on_arrow_change(value):
 	$Arrow/tip.texture = Globals.tip_list[value[0]]
 	$Arrow/body.texture = Globals.body_list[value[1]]
 	$Arrow/fletching.texture = Globals.fletching_list[value[2]]
+	arrow_id = value.duplicate()
 "
 
 [node name="Bow" type="AnimatedSprite2D"]

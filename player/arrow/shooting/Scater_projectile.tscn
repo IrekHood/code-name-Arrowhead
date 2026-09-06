@@ -1,0 +1,47 @@
+[gd_scene load_steps=7 format=3 uid="uid://b06mas0h5s20m"]
+
+[ext_resource type="Texture2D" uid="uid://dcgkxfhhnlhsy" path="res://enemies/enemy.png" id="1_fqcfo"]
+[ext_resource type="Shader" uid="uid://biy5wcadx78xn" path="res://player/arrow/shooting/Scater_projectile.gdshader" id="1_o72ln"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c6edt"]
+shader = ExtResource("1_o72ln")
+
+[sub_resource type="GDScript" id="GDScript_o72ln"]
+script/source = "extends Area2D
+
+var speed = 900
+const DRAG = 900
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _physics_process(delta: float) -> void:
+	position += transform.x * speed * delta
+	speed -= DRAG * delta
+	if speed <= 0:
+		queue_free()
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_o72ln"]
+shader = ExtResource("1_o72ln")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_o72ln"]
+radius = 28.071337
+
+[node name="ScaterProjectile" type="Area2D"]
+material = SubResource("ShaderMaterial_c6edt")
+collision_layer = 2
+collision_mask = 9
+script = SubResource("GDScript_o72ln")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_o72ln")
+position = Vector2(2, -4)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_fqcfo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_o72ln")
