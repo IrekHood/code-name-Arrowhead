@@ -1,0 +1,187 @@
+[gd_scene load_steps=14 format=3 uid="uid://cdtma6igqsv1d"]
+
+[ext_resource type="Texture2D" uid="uid://dcgkxfhhnlhsy" path="res://enemies/enemy.png" id="1_ayu0o"]
+
+[sub_resource type="GDScript" id="GDScript_ayu0o"]
+script/source = "extends CharacterBody2D
+
+const MAX_HEALTH = 100
+
+var knockbackable = true
+var wheight = 1
+var knockback_force: float
+var knockback_dir: Vector2
+@export var knockback_alpha = 0
+
+var health = MAX_HEALTH:
+	set(value):
+		_check_health(value)
+		health = value
+
+
+func _physics_process(delta: float) -> void:
+	
+	velocity = Vector2()# problematic
+	
+	_manage_knockback()
+	
+	move_and_slide()
+
+func hit(damage, instagator, strenght=100):
+	if $InvincibilityTimer.is_stopped():
+		$InvincibilityTimer.start()
+		$HitPlayer.play(\"flash_animation\")
+		health -= damage
+		
+		if knockbackable:
+			knockback_dir = instagator.global_position.direction_to(global_position)
+			apply_knockback(strenght)
+			
+			
+func apply_knockback(force):
+	$KnockbackPlayer.play(\"knockback_track\")
+	knockback_force = force/wheight
+
+
+func _manage_knockback():
+	velocity += (knockback_force * knockback_alpha) * knockback_dir
+
+
+func _check_health(hp):
+	if hp <= 0:
+		queue_free()
+
+
+func _on_contact_area_body_entered(body: Node2D) -> void:
+	if body.is_in_group(\"Player\"):
+		body.hit()
+"
+
+[sub_resource type="Shader" id="Shader_ayu0o"]
+code = "shader_type canvas_item;
+
+uniform vec4 flash_color : source_color;
+uniform float flash_value : hint_range(0.0, 1.0, 0.1);
+
+void fragment() {
+	vec4 texture_color = texture(TEXTURE, UV);
+	COLOR = mix(texture_color, flash_color, flash_value);
+	COLOR.a = texture_color.a;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n2htl"]
+shader = SubResource("Shader_ayu0o")
+shader_parameter/flash_color = Color(1, 0, 0, 1)
+shader_parameter/flash_value = 0.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lqvup"]
+radius = 59.03389
+
+[sub_resource type="Animation" id="Animation_lqvup"]
+resource_name = "flash_animation"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:material:shader_parameter/flash_value")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, 1.0, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_u6eqa"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:material:shader_parameter/flash_value")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_ayu0o"]
+resource_name = "knockback"
+length = 0.7
+loop_mode = 1
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ct3vo"]
+_data = {
+&"RESET": SubResource("Animation_u6eqa"),
+&"flash_animation": SubResource("Animation_lqvup"),
+&"knockback": SubResource("Animation_ayu0o")
+}
+
+[sub_resource type="Animation" id="Animation_ct3vo"]
+resource_name = "knockback_track"
+length = 0.7
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:knockback_alpha")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(2, 2, 2),
+"points": PackedFloat32Array(0, 0, -1.420019, 0, 1.0664729, 0.9875123, -0.183, -0.013, 0.16632082, 0.01181514, -0.007402599, -0.12222223, 0, 0, 0),
+"times": PackedFloat32Array(0, 0.16666667, 0.5)
+}
+
+[sub_resource type="Animation" id="Animation_n2htl"]
+length = 0.001
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_h8s5d"]
+_data = {
+&"RESET": SubResource("Animation_n2htl"),
+&"knockback_track": SubResource("Animation_ct3vo")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ayu0o"]
+radius = 45.0
+
+[node name="StaticEnemy" type="CharacterBody2D" groups=["Entity"]]
+collision_layer = 8
+collision_mask = 9
+script = SubResource("GDScript_ayu0o")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_n2htl")
+position = Vector2(5, -8)
+texture = ExtResource("1_ayu0o")
+
+[node name="TargetCollision" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_lqvup")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+debug_enabled = true
+
+[node name="InvincibilityTimer" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
+[node name="HitPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_ct3vo")
+}
+
+[node name="KnockbackPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_h8s5d")
+}
+
+[node name="ContactArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ContactArea"]
+shape = SubResource("CircleShape2D_ayu0o")
+
+[connection signal="body_entered" from="ContactArea" to="." method="_on_contact_area_body_entered"]

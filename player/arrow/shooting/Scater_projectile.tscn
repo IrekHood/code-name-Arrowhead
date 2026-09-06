@@ -11,6 +11,8 @@ script/source = "extends Area2D
 
 var speed = 900
 const DRAG = 900
+const BASE_DAMEGE = 10
+const KNOCKBACK_STRENGHT = 200
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -23,6 +25,15 @@ func _physics_process(delta: float) -> void:
 	speed -= DRAG * delta
 	if speed <= 0:
 		queue_free()
+
+
+func _on_body_entered(body: Node2D) -> void:
+	if not body.is_in_group(\"Player\"):
+		queue_free()
+		if not body.get_groups().is_empty():
+			var damage = BASE_DAMEGE
+			body.hit(damage, self, KNOCKBACK_STRENGHT)
+		
 "
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_o72ln"]
@@ -45,3 +56,5 @@ texture = ExtResource("1_fqcfo")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_o72ln")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

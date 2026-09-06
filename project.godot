@@ -33,6 +33,7 @@ version_control/autoload_on_startup=true
 [global_group]
 
 Player="tags all, that has an realtionship to thle player, sohe does not intercact with himselve"
+Entity="a group for all that has collision, but we dont want to mistake fo walls"
 
 [gui]
 

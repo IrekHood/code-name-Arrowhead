@@ -13,6 +13,11 @@ const BASE_SPEED = 1300
 const FAST_SPEED = 3500
 const HOMING_TURN_SPEED = 1.0  # radians/sec
 
+const BASE_DAMEGE = 10
+const SHAPREND_DAMAGE = 40
+
+
+
 var moving: = true
 
 var arrow_id = [1, 1, 1]
@@ -38,7 +43,7 @@ func _physics_process(delta: float) -> void:
 			1:  # normal
 				pass
 			2:  # scatershot
-				if $ScaterTimer.is_stopped():
+				if $ScaterTimer.is_stopped() and moving:
 					if arrow_id[2] == 0: # interaction with fast fletchng
 						$ScaterTimer.wait_time = 0.12
 					$ScaterTimer.start()
@@ -50,6 +55,7 @@ func _physics_process(delta: float) -> void:
 			2:  # area
 				if $Area2D/CollisionPolygon2D.disabled:
 					$Area2D/CollisionPolygon2D.set_deferred(\"disabled\", false)
+					print(\"jo\")
 		 
 	
 	if moving:
@@ -62,6 +68,8 @@ func _on_body_entered(body: Node2D) -> void:
 	if body.get_groups().is_empty():
 		moving = false
 	elif not body.is_in_group(\"Player\"):
+		var damage = BASE_DAMEGE
+		var strenght = 400
 		match arrow_id[0]:
 			0: # ice
 				pass
@@ -69,6 +77,9 @@ func _on_body_entered(body: Node2D) -> void:
 				pass
 			2:  # poison
 				pass
+				
+		body.hit(damage, self, strenght)
+		queue_free()
 		
 		
 		
@@ -133,6 +144,7 @@ disabled = true
 
 [node name="ScaterTimer" type="Timer" parent="."]
 wait_time = 0.3
+one_shot = true
 
 [node name="Marker2D2" type="Marker2D" parent="."]
 position = Vector2(5, 3)

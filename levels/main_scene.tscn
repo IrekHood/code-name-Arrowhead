@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://bcnf17ouvynld"]
+
+[ext_resource type="PackedScene" uid="uid://b32ye0wokcgwn" path="res://player/player/Player.tscn" id="2_ps8db"]
+[ext_resource type="PackedScene" uid="uid://c5mhmsja15ctp" path="res://UI/arrow_selection/ArrowSelection.tscn" id="3_1uhby"]
+[ext_resource type="PackedScene" uid="uid://b4n7typ40ce4x" path="res://levels/caves/LandSpot.tscn" id="3_n6n52"]
+
+[node name="MainScene" type="Node2D"]
+
+[node name="Projectiles" type="Node2D" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("2_ps8db")]
+position = Vector2(535, 289)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ArrowSelection" parent="CanvasLayer" instance=ExtResource("3_1uhby")]
+visible = false
+
+[node name="LandSpot" parent="." instance=ExtResource("3_n6n52")]
+position = Vector2(-368, -163)
